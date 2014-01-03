@@ -12,6 +12,7 @@ var game = {
   },
   init : function(){
     this.createCanvas();
+    this.gravity = true;
     map.init(WIDTH,HEIGHT);
     this.drawAll();
     this.checkKeydown();
@@ -23,16 +24,19 @@ var game = {
     animationFrame = setInterval(game.animate,30)
   },
   checkGravity : function(){
-    var ph = player.y+player.h - map.grounds[0].y;
-    if(ph < 0){
-      this.movePlayerTo(player.x,player.y+10);
-      if(ph >= -player.h/7){
-        this.movePlayerTo(player.x,map.grounds[0].y-player.h);
+    if(this.gravity){
+      var ph = player.y+player.h - map.grounds[0].y;
+      if(ph < 0){
+        this.movePlayerTo(player.x,player.y+10);
+        if(ph >= -player.h/7){
+          this.movePlayerTo(player.x,map.grounds[0].y-player.h);
+        }
       }
     }
   },
   checkKeydown : function(){
     document.onkeydown = function(event){
+      game.gravity = false;
       var e = event||window.event;
       switch(e.keyCode){
         case 65:
@@ -107,4 +111,5 @@ var player = {
 }
 window.onload = function(){
   game.init();
+  console.log('----------------\n有的时候\n觉得自己不断在努力\n但是事实上\n一直没走出那个枷锁\nBy Fakefish\n----------------');
 }
