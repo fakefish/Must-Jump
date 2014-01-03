@@ -49,16 +49,16 @@ var game = {
   },
   controlPlayer : function(){
     if(player.top){
-      player.y-=40;
+      player.y -= player.h/2;
+      player.y = player.y<0 ? 0 :player.y;
     }
     if(player.left){
-      player.x-=5;
+      player.x -= player.w;
+      player.x = player.x<0 ? 0 :player.x;
     }
     if(player.right){
-      player.x+=5;
-    }
-    if(player.bottom){
-      player.y+=40;
+      player.x += player.w;
+      player.x = player.x+player.w>WIDTH ? WIDTH-player.w :player.x;
     }
   },
   movePlayerTo : function(x,y){
@@ -72,8 +72,6 @@ var game = {
   animate : function(){
     game.ctx.clearRect(0,0,WIDTH,HEIGHT);
     game.checkGravity();
-
-
     game.controlPlayer();
     game.drawAll();
   },
