@@ -15,7 +15,7 @@ var game = {
     this.gravity = true;
     map.init(WIDTH,HEIGHT);
     this.drawAll();
-    this.checkKeydown();
+    document.onkeydown = this.checkKeydown;
 
     this.start();
   },
@@ -34,22 +34,20 @@ var game = {
       }
     }
   },
-  checkKeydown : function(){
-    document.onkeydown = function(event){
-      game.gravity = false;
-      var e = event||window.event;
-      switch(e.keyCode){
-        case 65:
-        case 37:player.left = true;break;
-        case 87:
-        case 38:player.top = true;break;
-        case 68:
-        case 39:player.right = true;break;
-        case 83:
-        case 40:player.bottom = true;break;
-      }
-      return false;
+  checkKeydown : function(event){
+    game.gravity = false;
+    var e = event||window.event;
+    switch(e.keyCode){
+      case 65:
+      case 37:player.left = true;break;
+      case 87:
+      case 38:player.top = true;break;
+      case 68:
+      case 39:player.right = true;break;
+      case 83:
+      case 40:player.bottom = true;break;
     }
+    return false;
   },
   controlPlayer : function(){
     if(player.top){
@@ -111,5 +109,5 @@ var player = {
 }
 window.onload = function(){
   game.init();
-  console.log('----------------\n有的时候\n觉得自己不断在努力\n但是事实上\n一直没走出那个枷锁\nBy Fakefish\n----------------');
+  // console.log('----------------\n有的时候\n觉得自己不断在努力\n但是事实上\n一直没走出那个枷锁\nBy Fakefish\n----------------');
 }
