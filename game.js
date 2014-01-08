@@ -15,7 +15,6 @@ var game = {
     this.gravity = true;
     map.init(WIDTH,HEIGHT);
     this.drawAll();
-    document.onkeydown = this.checkKeydown;
 
     this.start();
   },
@@ -30,12 +29,12 @@ var game = {
         this.movePlayerTo(player.x,player.y+10);
         if(ph >= -player.h/7){
           this.movePlayerTo(player.x,map.grounds[0].y-player.h);
+          player.canControl = true;
         }
       }
     }
   },
   checkKeydown : function(event){
-    game.gravity = false;
     var e = event||window.event;
     switch(e.keyCode){
       case 65:
@@ -49,17 +48,14 @@ var game = {
     }
     return false;
   },
-  controlPlayer : function(){
+  limitPlayer : function(){
     if(player.top){
-      player.y -= player.h/2;
       player.y = player.y<0 ? 0 :player.y;
     }
     if(player.left){
-      player.x -= player.w;
       player.x = player.x<0 ? 0 :player.x;
     }
     if(player.right){
-      player.x += player.w;
       player.x = player.x+player.w>WIDTH ? WIDTH-player.w :player.x;
     }
   },
@@ -74,8 +70,33 @@ var game = {
   animate : function(){
     game.ctx.clearRect(0,0,WIDTH,HEIGHT);
     game.checkGravity();
-    game.controlPlayer();
+    game.limitPlayer();
+    if(player.canControl){
+      if(!player.isJumping){
+        document.onkeydown = game.checkKeydown;
+      }else{
+        document.onkeydown = null;
+        game.jumpFrame = 0;
+        game.playerJump();
+        player.top = player.left = player.right = player.bottom = false;
+      }
+      game.limitPlayer();
+    }
     game.drawAll();
+  },
+  playerJump:function(){
+    console.log(player.isJumping)
+    if(!player.isJumping){
+      if(player.right){
+        player.isJumping = 'right';
+      }
+    }
+    if(player.isJumping === 'right'){
+      player.x += 2;
+      player.y -= 10;
+      this.jumpFrame++;
+    }
+    
   },
   drawAll : function(){
     var i;
@@ -83,7 +104,6 @@ var game = {
       this.createRect(map.grounds[i].x,map.grounds[i].y,map.grounds[i].w,map.grounds[i].h,'green');
     }
     this.createRect(player.x,player.y,player.w,player.h,'lightblue');
-    player.top = player.left = player.right = player.bottom = false;
   }
 
 }
@@ -105,7 +125,9 @@ var player = {
   top:false,
   left:false,
   right:false,
-  top:false
+  top:false,
+  isJumping:false,
+  canControl:false,
 }
 window.onload = function(){
   game.init();
