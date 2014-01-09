@@ -124,7 +124,7 @@ var game = {
     for(i=0; i<map.grounds.length; i++){
       this.createRect(map.grounds[i].x,map.grounds[i].y,map.grounds[i].w,map.grounds[i].h,'green');
     }
-    this.createRect(player.x,player.y,player.w,player.h,'lightblue');
+    this.createRect(player.x,player.y,player.w,player.h,player.background);
   }
 
 }
@@ -143,6 +143,7 @@ var player = {
   y:0,
   w:20,
   h:100,
+  background:'lightblue',
   top:false,
   left:false,
   right:false,
@@ -150,9 +151,17 @@ var player = {
   isJumping:false,
   canControl:false,
   jumpHor:120,// 跳跃的水平距离
-  jumpVer:320,// 跳跃的垂直距离
+  jumpVer:315,// 跳跃的垂直距离
   jumpFs:30,// 跳跃需要的帧数
-}
+};
+var enemy = {
+  w:100,
+  h:20,
+  dir:right,
+  init: function(x,y){
+
+  }
+};
 window.onload = function(){
   game.init();
   // console.log('----------------\n有的时候\n觉得自己不断在努力\n但是事实上\n一直没走出那个枷锁\nBy Fakefish\n----------------');
