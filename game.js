@@ -13,6 +13,7 @@ var game = {
   init : function(){
     this.createCanvas();
     this.gravity = true;
+    this.jumpFrame = 0;
     map.init(WIDTH,HEIGHT);
     this.drawAll();
 
@@ -35,6 +36,7 @@ var game = {
     }
   },
   checkKeydown : function(event){
+    player.isJumping = true;
     var e = event||window.event;
     switch(e.keyCode){
       case 65:
@@ -49,14 +51,14 @@ var game = {
     return false;
   },
   limitPlayer : function(){
-    if(player.top){
-      player.y = player.y<0 ? 0 :player.y;
+    if(player.x<0){
+      player.x = 0;
     }
-    if(player.left){
-      player.x = player.x<0 ? 0 :player.x;
+    if(player.y<0){
+      player.y = 0;
     }
-    if(player.right){
-      player.x = player.x+player.w>WIDTH ? WIDTH-player.w :player.x;
+    if(player.x+player.w > WIDTH){
+      player.x = WIDTH - player.w;
     }
   },
   movePlayerTo : function(x,y){
@@ -70,33 +72,52 @@ var game = {
   animate : function(){
     game.ctx.clearRect(0,0,WIDTH,HEIGHT);
     game.checkGravity();
-    game.limitPlayer();
     if(player.canControl){
       if(!player.isJumping){
         document.onkeydown = game.checkKeydown;
       }else{
         document.onkeydown = null;
-        game.jumpFrame = 0;
         game.playerJump();
         player.top = player.left = player.right = player.bottom = false;
       }
-      game.limitPlayer();
+      
     }
+    game.limitPlayer();
     game.drawAll();
   },
   playerJump:function(){
-    console.log(player.isJumping)
-    if(!player.isJumping){
+    if(player.isJumping){
       if(player.right){
         player.isJumping = 'right';
+      } else if(player.left){
+        player.isJumping = 'left';
       }
     }
     if(player.isJumping === 'right'){
-      player.x += 2;
-      player.y -= 10;
+      player.x += player.jumpHor/player.jumpFs;
+      player.y -= player.jumpVer/(player.jumpFs/2);
       this.jumpFrame++;
+      if(this.jumpFrame>player.jumpFs/2){
+        player.y += player.jumpVer/(player.jumpFs/2);
+      }
+      if(this.jumpFrame>player.jumpFs){
+        player.isJumping = false;
+        this.jumpFrame = 0;
+      }
     }
-    
+    if(player.isJumping === 'left'){
+      player.x -= player.jumpHor/player.jumpFs;
+      player.y -= player.jumpVer/(player.jumpFs/2);
+
+      this.jumpFrame++;
+      if(this.jumpFrame>player.jumpFs/2){
+        player.y += player.jumpVer/(player.jumpFs/2);
+      }
+      if(this.jumpFrame>player.jumpFs){
+        player.isJumping = false;
+        this.jumpFrame = 0;
+      }
+    }
   },
   drawAll : function(){
     var i;
@@ -128,6 +149,9 @@ var player = {
   top:false,
   isJumping:false,
   canControl:false,
+  jumpHor:120,// 跳跃的水平距离
+  jumpVer:320,// 跳跃的垂直距离
+  jumpFs:30,// 跳跃需要的帧数
 }
 window.onload = function(){
   game.init();
