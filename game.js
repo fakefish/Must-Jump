@@ -131,6 +131,7 @@ var game = {
 var map = {
   world : {},
   grounds : [],
+  enemies : [],
   // player : [],
   init : function(w,h){
     this.world.width = w;
@@ -154,13 +155,11 @@ var player = {
   jumpVer:315,// 跳跃的垂直距离
   jumpFs:30,// 跳跃需要的帧数
 };
-var enemy = {
-  w:100,
-  h:20,
-  dir:right,
-  init: function(x,y){
-
-  }
+var enemy = function(x,y){
+  this.x = x;
+  this.y = y;
+  this.w = 100;
+  this.h = 20;
 };
 window.onload = function(){
   game.init();
