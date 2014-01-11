@@ -73,13 +73,17 @@ var game = {
     game.ctx.clearRect(0,0,WIDTH,HEIGHT);
     game.checkGravity();
     if(player.canControl){
-      if(!player.isJumping){
-        document.onkeydown = game.checkKeydown;
-      }else{
-        document.onkeydown = null;
-        game.playerJump();
-        player.top = player.left = player.right = player.bottom = false;
-      }
+      // if(!player.isJumping){
+      //   document.onkeydown = game.checkKeydown;
+      // }else{
+      //   document.onkeydown = null;
+      //   game.playerJump();
+      //   player.top = player.left = player.right = player.bottom = false;
+      // }
+      // TODO:
+      // 就是按完上，就可能按左右控制下落位置
+      // 所以不能简单地去除按键绑定，需要判断
+      document.onkeydown = game.checkKeydown;
       
     }
     game.limitPlayer();
