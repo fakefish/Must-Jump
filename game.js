@@ -95,28 +95,20 @@ var game = {
     }
     if(player.isJumping === 'right'){
       player.x += player.jumpHor/player.jumpFs;
-      player.y -= player.jumpVer/(player.jumpFs/2);
-      this.jumpFrame++;
-      if(this.jumpFrame>player.jumpFs/2){
-        player.y += player.jumpVer/(player.jumpFs/2);
-      }
-      if(this.jumpFrame>player.jumpFs){
-        player.isJumping = false;
-        this.jumpFrame = 0;
-      }
     }
     if(player.isJumping === 'left'){
       player.x -= player.jumpHor/player.jumpFs;
-      player.y -= player.jumpVer/(player.jumpFs/2);
+    }
 
-      this.jumpFrame++;
-      if(this.jumpFrame>player.jumpFs/2){
-        player.y += player.jumpVer/(player.jumpFs/2);
-      }
-      if(this.jumpFrame>player.jumpFs){
-        player.isJumping = false;
-        this.jumpFrame = 0;
-      }
+    player.y -= player.jumpVer/(player.jumpFs/2);
+
+    this.jumpFrame++;
+    if(this.jumpFrame>player.jumpFs/2){
+      player.y += player.jumpVer/(player.jumpFs/2);
+    }
+    if(this.jumpFrame>player.jumpFs){
+      player.isJumping = false;
+      this.jumpFrame = 0;
     }
   },
   drawAll : function(){
