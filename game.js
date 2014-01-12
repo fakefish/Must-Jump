@@ -14,6 +14,7 @@ var game = {
     this.createCanvas();
     this.gravity = true;
     this.jumpFrame = 0;
+    this.preAction = false;
     map.init(WIDTH,HEIGHT);
     this.drawAll();
 
@@ -36,7 +37,6 @@ var game = {
     }
   },
   checkKeydown : function(event){
-    player.isJumping = true;
     var e = event||window.event;
     switch(e.keyCode){
       case 65:
@@ -48,7 +48,7 @@ var game = {
       case 83:
       case 40:player.bottom = true;break;
     }
-    return false;
+
   },
   limitPlayer : function(){
     if(player.x<0){
@@ -84,35 +84,47 @@ var game = {
       // 就是按完上，就可能按左右控制下落位置
       // 所以不能简单地去除按键绑定，需要判断
       document.onkeydown = game.checkKeydown;
-      
+      game.playerJump();
     }
     game.limitPlayer();
     game.drawAll();
   },
   playerJump:function(){
-    if(player.isJumping){
+    if(this.jumpFrame<=player.jumpFs && player.top){
       if(player.right){
-        player.isJumping = 'right';
-      } else if(player.left){
-        player.isJumping = 'left';
+        this.preAction = 'right';
+        player.right = false;
       }
-    }
-    if(player.isJumping === 'right'){
-      player.x += player.jumpHor/player.jumpFs;
-    }
-    if(player.isJumping === 'left'){
+      if(player.left){
+        this.preAction = 'left';
+        player.left = false;
+      }
+
+      switch(this.preAction){
+        case 'right':
+          player.x += player.jumpHor/player.jumpFs
+          break;
+        case 'left':
+          player.x -= player.jumpHor/player.jumpFs;
+          break;
+      }
+      player.y -= player.jumpVer/(player.jumpFs/2);
+
+      this.jumpFrame++;
+      if(this.jumpFrame>player.jumpFs/2){
+        player.y += player.jumpVer/(player.jumpFs/2);
+      }
+      if(this.jumpFrame===player.jumpFs){
+        player.isJumping = false;
+        this.jumpFrame = 0;
+        this.preAction = player.top = player.left = player.right = player.bottom = false;
+      }
+    }else if(player.left){
       player.x -= player.jumpHor/player.jumpFs;
-    }
-
-    player.y -= player.jumpVer/(player.jumpFs/2);
-
-    this.jumpFrame++;
-    if(this.jumpFrame>player.jumpFs/2){
-      player.y += player.jumpVer/(player.jumpFs/2);
-    }
-    if(this.jumpFrame>player.jumpFs){
-      player.isJumping = false;
-      this.jumpFrame = 0;
+      this.preAction = player.left = false;
+    }else if(player.right){
+      player.x += player.jumpHor/player.jumpFs;
+      this.preAction = player.right = false;
     }
   },
   drawAll : function(){
@@ -148,7 +160,7 @@ var player = {
   isJumping:false,
   canControl:false,
   jumpHor:120,// 跳跃的水平距离
-  jumpVer:315,// 跳跃的垂直距离
+  jumpVer:300,// 跳跃的垂直距离
   jumpFs:30,// 跳跃需要的帧数
 };
 var enemy = function(x,y){
