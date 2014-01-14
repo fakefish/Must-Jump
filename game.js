@@ -15,6 +15,8 @@ var game = {
     this.gravity = true;
     this.jumpFrame = 0;
     this.preAction = false;
+    this.checkKeydown();
+    this.checkKeyup();
     map.init(WIDTH,HEIGHT);
     this.drawAll();
 
@@ -37,18 +39,33 @@ var game = {
     }
   },
   checkKeydown : function(event){
-    var e = event||window.event;
-    switch(e.keyCode){
-      case 65:
-      case 37:player.left = true;break;
-      case 87:
-      case 38:player.top = true;break;
-      case 68:
-      case 39:player.right = true;break;
-      case 83:
-      case 40:player.bottom = true;break;
+    document.onkeydown = function(event){
+      switch(e.keyCode){
+          case 65:
+          case 37:player.left = 1;break;
+          case 87:
+          case 38:player.isJumping = true;player.top = 1;break;
+          case 68:
+          case 39:player.right = 1;break;
+          case 83:
+          case 40:player.bottom = 1;break;
+      }   
+    };
+  },
+  checkKeyup : function(event){
+    document.onkeyup = function(event){
+      var e = event||window.event;
+      switch(e.keyCode){
+        case 65:
+        case 37:player.left = 0;break;
+        case 87:
+        case 38:player.top = 0;break;
+        case 68:
+        case 39:player.right = 0;break;
+        case 83:
+        case 40:player.bottom = 0;break;
+      }
     }
-
   },
   limitPlayer : function(){
     if(player.x<0){
@@ -83,49 +100,66 @@ var game = {
       // TODO:
       // 就是按完上，就可能按左右控制下落位置
       // 所以不能简单地去除按键绑定，需要判断
-      document.onkeydown = game.checkKeydown;
+      if(!player.isJumping){
+        
+      }else{
+        // true代表我需要屏蔽上跳的监听
+        game.checkKeydown(true);
+      }
+      
+      // game.checkKeydown();
       game.playerJump();
     }
     game.limitPlayer();
     game.drawAll();
   },
   playerJump:function(){
-    if(this.jumpFrame<=player.jumpFs && player.top){
-      if(player.right){
-        this.preAction = 'right';
-        player.right = false;
-      }
-      if(player.left){
-        this.preAction = 'left';
-        player.left = false;
-      }
+    var action = player.left+''+player.top+''+player.right;
+    console.log(action)
 
-      switch(this.preAction){
-        case 'right':
-          player.x += player.jumpHor/player.jumpFs
-          break;
-        case 'left':
-          player.x -= player.jumpHor/player.jumpFs;
-          break;
-      }
-      player.y -= player.jumpVer/(player.jumpFs/2);
+    if(this.jumpFrame<=player.jumpFs){
 
       this.jumpFrame++;
-      if(this.jumpFrame>player.jumpFs/2){
-        player.y += player.jumpVer/(player.jumpFs/2);
-      }
-      if(this.jumpFrame===player.jumpFs){
-        player.isJumping = false;
-        this.jumpFrame = 0;
-        this.preAction = player.top = player.left = player.right = player.bottom = false;
-      }
-    }else if(player.left){
-      player.x -= player.jumpHor/player.jumpFs;
-      this.preAction = player.left = false;
-    }else if(player.right){
-      player.x += player.jumpHor/player.jumpFs;
-      this.preAction = player.right = false;
     }
+    // if(player.top){
+    //   if(player.right){
+    //     this.preAction = 'right';
+    //     player.right = false;
+    //   }
+    //   if(player.left){
+    //     this.preAction = 'left';
+    //     player.left = false;
+    //   }
+
+    //   switch(this.preAction){
+    //     case 'right':
+    //       player.x += player.jumpHor/player.jumpFs
+    //       break;
+    //     case 'left':
+    //       player.x -= player.jumpHor/player.jumpFs;
+    //       break;
+    //   }
+    //   player.y -= player.jumpVer/(player.jumpFs/2);
+
+    //   this.jumpFrame++;
+    //   if(this.jumpFrame>player.jumpFs/2){
+    //     player.y += player.jumpVer/(player.jumpFs/2);
+    //   }
+    // }else if(player.left){
+    //   this.jumpFrame+=player.jumpFs/3;
+    //   player.x -= player.jumpHor/player.jumpFs;
+    //   this.jumpFrame++;
+    //   // this.preAction = player.left = false;
+    // }else if(player.right){
+    //   this.jumpFrame+=player.jumpFs/3;
+    //   player.x += player.jumpHor/player.jumpFs;
+    //   // this.preAction = player.right = false;
+    // }
+    // if(this.jumpFrame===player.jumpFs){
+    //     player.isJumping = false;
+    //     this.jumpFrame = 0;
+    //     // this.preAction = player.top = player.left = player.right = player.bottom = false;
+    //   }
   },
   drawAll : function(){
     var i;
@@ -153,11 +187,12 @@ var player = {
   w:20,
   h:100,
   background:'lightblue',
-  top:false,
-  left:false,
-  right:false,
-  top:false,
-  isJumping:false,
+  // 方向使用01代替false和true
+  top:0,
+  left:0,
+  right:0,
+  top:0,
+  isJumping:0,
   canControl:false,
   jumpHor:120,// 跳跃的水平距离
   jumpVer:300,// 跳跃的垂直距离
